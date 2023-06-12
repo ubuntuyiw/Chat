@@ -6,6 +6,8 @@ plugins {
 
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -94,4 +96,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+    //Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 }
