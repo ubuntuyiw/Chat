@@ -72,4 +72,8 @@ dependencies {
     implementation("com.google.firebase:firebase-functions-ktx:20.3.1")
     implementation("com.google.firebase:firebase-messaging-ktx:23.1.2")
     implementation("com.google.firebase:firebase-auth-ktx:22.0.0")
+
+
+    //Navigation
+    implementation("androidx.navigation:navigation-compose:2.6.0")
 }
