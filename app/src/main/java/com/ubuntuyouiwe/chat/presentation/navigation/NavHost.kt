@@ -7,6 +7,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ubuntuyouiwe.chat.presentation.chat.Chat
+import com.ubuntuyouiwe.chat.presentation.login.Login
 
 @Composable
 fun NavHostScreen(viewModel: NavHostViewModel = hiltViewModel()) {
@@ -27,11 +29,11 @@ fun NavHostScreen(viewModel: NavHostViewModel = hiltViewModel()) {
         }
 
         composable(Screen.LOGIN.name) {
-            //Login(navController)
+            Login(navController)
         }
 
         composable(Screen.HOME.name) {
-            //Chat()
+            Chat()
         }
     }
 
