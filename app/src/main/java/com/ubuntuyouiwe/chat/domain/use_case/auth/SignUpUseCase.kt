@@ -19,6 +19,8 @@ class SignUpUseCase @Inject constructor(
             emit(Resource.Success())
         } catch (e: FirebaseAuthException) {
             emit(Resource.Error(e.localizedMessage))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage))
         }
     }
 }
