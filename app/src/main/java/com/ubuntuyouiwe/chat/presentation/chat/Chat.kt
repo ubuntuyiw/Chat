@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +17,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.ubuntuyouiwe.chat.data.util.Pagination
 import com.ubuntuyouiwe.chat.presentation.components.Message
 import com.ubuntuyouiwe.chat.presentation.components.MessageInputBox
 import com.ubuntuyouiwe.chat.presentation.components.SpecialTopBar
@@ -31,15 +29,14 @@ fun Chat() {
     var value by remember {
         mutableStateOf("")
     }
-    val messageList = viewModel.stateGet.collectAsStateWithLifecycle().value.listMessageResult
-    val errorMessage = viewModel.stateGet.collectAsStateWithLifecycle().value.errorMessage
-    val loading = viewModel.stateGet.collectAsStateWithLifecycle().value.isLoading
+    val stateGet = viewModel.stateGet.collectAsStateWithLifecycle()
+
 
     val lazyListState = rememberLazyListState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            SpecialTopBar(title = "Chat", isFromCache = messageList?.isFromCache) {
+            SpecialTopBar(title = "Chat", isFromCache = stateGet.value.listMessageResult?.isFromCache) {
                 Firebase.auth.signOut()
             }
         },
@@ -59,7 +56,7 @@ fun Chat() {
                 .fillMaxSize(),
             reverseLayout = true
         ) {
-            messageList?.messageResult.let {
+            stateGet.value.listMessageResult?.messageResult.let {
                 it?.let {messageResults ->
                     if (messageResults.isEmpty()) {
                         item {
@@ -68,14 +65,6 @@ fun Chat() {
                     }
                     else {
                         itemsIndexed(messageResults) { _, b ->
-
-                            LaunchedEffect(key1 = lazyListState.canScrollForward, key2 = lazyListState.canScrollBackward) {
-                                if (!lazyListState.canScrollForward) {
-                                    viewModel.getMessage(Pagination.NEXT)
-
-                                }
-                            }
-
                             Message(
                                 Firebase.auth.currentUser?.email == b.email,
                                 email = b.email.toString(),
@@ -88,16 +77,9 @@ fun Chat() {
 
             }
 
-
-            /*if (loading == true) {
+            if (stateGet.value.errorMessage.isNotBlank()) {
                 item {
-                    CircularProgressIndicator()
-                }
-            }*/
-
-            if (errorMessage.isNotBlank()) {
-                item {
-                    Text(text = errorMessage)
+                    Text(text = stateGet.value.errorMessage)
                 }
             }
 

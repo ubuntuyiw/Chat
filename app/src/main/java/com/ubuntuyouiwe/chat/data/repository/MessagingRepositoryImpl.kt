@@ -5,7 +5,6 @@ import com.google.firebase.firestore.Query
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.firestore.FireStoreDataSource
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
-import com.ubuntuyouiwe.chat.data.util.Pagination
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.Messages
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
@@ -16,23 +15,21 @@ import javax.inject.Inject
 
 class MessagingRepositoryImpl @Inject constructor(
     private val fireStore: FireStoreDataSource
-): MessagingRepository {
+) : MessagingRepository {
 
     override suspend fun insertMessage(messageResult: MessageResult) {
-        fireStore.insert(messageResult.toMessageResultDto())
+        fireStore.insert(
+            messageResult.toMessageResultDto(),
+            collection = FirebaseCollection.Message2
+        )
     }
 
 
     @Throws(FirebaseFirestoreException::class)
-    override fun getMessage(pagination: Pagination): Flow<Messages?> {
-
-
+    override fun getMessage(): Flow<Messages?> {
         return fireStore.get(
-            collection = FirebaseCollection.Message,
+            collection = FirebaseCollection.Message2,
             orderBy = OrderBy("date", Query.Direction.DESCENDING),
-            initialLimit = 20,
-            nextPageLimit = 5,
-            pagination = pagination
         ).map {
             if (it.isSuccess) {
                 val asd = Messages(
@@ -51,8 +48,5 @@ class MessagingRepositoryImpl @Inject constructor(
                 throw it.exceptionOrNull()!!
             }
         }
-
-
-
     }
 }

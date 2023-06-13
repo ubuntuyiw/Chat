@@ -1,8 +1,6 @@
 package com.ubuntuyouiwe.chat.domain.use_case.firestore
 
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.ubuntuyouiwe.chat.data.util.Pagination
-import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.Messages
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
 import com.ubuntuyouiwe.chat.util.Resource
@@ -15,10 +13,10 @@ class GetMessageUseCase @Inject constructor(
     private val messagingRepository: MessagingRepository
 ) {
 
-    operator fun invoke(pagination: Pagination): Flow<Resource<Messages>> = flow {
+    operator fun invoke(): Flow<Resource<Messages>> = flow {
         emit(Resource.Loading())
         try {
-            messagingRepository.getMessage(pagination).collect {
+            messagingRepository.getMessage().collect {
                 emit(Resource.Success(it))
             }
 

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.ubuntuyouiwe.chat.data.util.Pagination
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.use_case.firestore.GetMessageUseCase
 import com.ubuntuyouiwe.chat.domain.use_case.firestore.InsertUseCase
@@ -31,7 +30,7 @@ class ChatViewModel @Inject constructor(
 
 
     init {
-        getMessage(Pagination.REFRESH)
+        getMessage()
     }
 
     fun onEvent(event: ChatEvent) {
@@ -68,8 +67,8 @@ class ChatViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun getMessage(pagination: Pagination) {
-        getMessageUseCase(pagination).onEach {
+    private fun getMessage() {
+        getMessageUseCase().onEach {
             when (it) {
                 is Resource.Success -> {
                     _stateGet.value = stateGet.value.copy(
