@@ -99,4 +99,7 @@ dependencies {
 
     //Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+
+    //Splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

@@ -11,19 +11,10 @@ import com.ubuntuyouiwe.chat.presentation.chat.Chat
 import com.ubuntuyouiwe.chat.presentation.login.Login
 
 @Composable
-fun NavHostScreen(viewModel: NavHostViewModel = hiltViewModel()) {
+fun NavHostScreen(startDestination: Screen) {
     val navController = rememberNavController()
 
-    val state by viewModel.stateAuth.collectAsStateWithLifecycle()
-
-
-    val startDestination = if (state.isLoading) Screen.SPLASH.name
-    else if (state.success != null) Screen.HOME.name
-    else Screen.LOGIN.name
-
-
-
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = startDestination.name) {
         composable(Screen.SPLASH.name) {
 
         }
