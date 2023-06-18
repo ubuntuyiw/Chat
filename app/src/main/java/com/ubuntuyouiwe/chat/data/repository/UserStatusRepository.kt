@@ -14,13 +14,4 @@ class UserStatusRepository @Inject constructor(
 ) {
 
 
-    val firebaseUserDto: Flow<UserDto?>
-        get() = firebaseDataSource.authState().map {
-            it.currentUser?.toUserDto()
-        }
-
-    val firebaseUserDomain: Flow<User?>
-        get() = firebaseUserDto.map { it?.toUser() }
-
-
 }
