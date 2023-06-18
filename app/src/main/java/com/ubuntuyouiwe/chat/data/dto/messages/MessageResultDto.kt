@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.data.dto
+package com.ubuntuyouiwe.chat.data.dto.messages
 
 import com.google.firebase.Timestamp
 

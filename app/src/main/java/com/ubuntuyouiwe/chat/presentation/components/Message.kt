@@ -86,20 +86,19 @@ fun Message(messageOwner: Boolean, email: String, content: String, hasPendingWri
                                 painter = painterResource(id = R.drawable.baseline_access_time_24),
                                 contentDescription = "Sending",
                                 modifier = Modifier
-                                    .size(12.dp).align(Alignment.BottomEnd)
+                                    .size(12.dp)
+                                    .align(Alignment.BottomEnd)
                             )
                         else {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_done_24),
                                 contentDescription = "Sending",
                                 modifier = Modifier
-                                    .size(12.dp).align(Alignment.BottomEnd)
+                                    .size(12.dp)
+                                    .align(Alignment.BottomEnd)
                             )
                         }
                     }
-
-
-
 
 
                 }

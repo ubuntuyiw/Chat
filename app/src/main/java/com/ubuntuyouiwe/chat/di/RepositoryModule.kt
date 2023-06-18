@@ -2,8 +2,8 @@ package com.ubuntuyouiwe.chat.di
 
 import com.ubuntuyouiwe.chat.data.repository.AuthRepositoryImpl
 import com.ubuntuyouiwe.chat.data.repository.MessagingRepositoryImpl
-import com.ubuntuyouiwe.chat.data.source.remote.firebase.auth.AuthDataSource
-import com.ubuntuyouiwe.chat.data.source.remote.firebase.firestore.FireStoreDataSource
+import com.ubuntuyouiwe.chat.data.source.local.DataStoreDataSource
+import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
 import dagger.Module
@@ -20,16 +20,16 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authentication: AuthDataSource,
+        firebaseDataSource: FirebaseDataSource,
     ): AuthRepository =
-        AuthRepositoryImpl(authentication)
+        AuthRepositoryImpl(firebaseDataSource)
 
     @Provides
     @Singleton
     fun provideMessagingRepository(
-        fireStoreDataSource: FireStoreDataSource,
+        firebaseDataSource: FirebaseDataSource,
     ): MessagingRepository =
-        MessagingRepositoryImpl(fireStoreDataSource)
+        MessagingRepositoryImpl(firebaseDataSource)
 
 
 }

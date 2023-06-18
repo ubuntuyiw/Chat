@@ -1,6 +1,6 @@
 package com.ubuntuyouiwe.chat.domain.util
 
-import com.ubuntuyouiwe.chat.data.dto.MessageResultDto
+import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 import com.ubuntuyouiwe.chat.data.dto.UserCredentialsDto
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.UserCredentials

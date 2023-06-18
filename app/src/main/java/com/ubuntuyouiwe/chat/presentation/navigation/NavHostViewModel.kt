@@ -17,40 +17,7 @@ class NavHostViewModel @Inject constructor(
     private val authStateUseCase: AuthStateUseCase
 ) : ViewModel() {
 
-    private val _stateAuth = MutableStateFlow(AuthState())
-    val stateAuth: StateFlow<AuthState> = _stateAuth.asStateFlow()
 
-    init {
-        getAuthStateListener()
-    }
-
-    private fun getAuthStateListener() {
-        authStateUseCase().onEach {
-            when (it) {
-                is Resource.Success -> {
-                    _stateAuth.value = stateAuth.value.copy(
-                        success = it.data,
-                        errorMessage = null,
-                        isLoading = false
-                    )
-                }
-
-                is Resource.Error -> {
-                    _stateAuth.value = stateAuth.value.copy(
-                        success = null,
-                        errorMessage = it.message.toString(),
-                        isLoading = false
-                    )
-                }
-
-                is Resource.Loading -> {
-                    _stateAuth.value =
-                        stateAuth.value.copy(success = null, errorMessage = null, isLoading = true)
-                }
-
-            }
-        }.launchIn(viewModelScope)
-    }
 
 
 }

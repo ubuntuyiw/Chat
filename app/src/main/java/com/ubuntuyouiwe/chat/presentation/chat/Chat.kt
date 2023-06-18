@@ -1,24 +1,29 @@
 package com.ubuntuyouiwe.chat.presentation.chat
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ubuntuyouiwe.chat.presentation.components.Message
 import com.ubuntuyouiwe.chat.presentation.components.MessageInputBox
+import com.ubuntuyouiwe.chat.presentation.components.SpecialSnackBar
 import com.ubuntuyouiwe.chat.presentation.components.SpecialTopBar
 
 @Composable
@@ -29,15 +34,27 @@ fun Chat() {
     var value by remember {
         mutableStateOf("")
     }
-    val stateGet = viewModel.stateGet.collectAsStateWithLifecycle()
+    val getState by remember {
+        viewModel.stateGet
+    }
+
+    val insertState by remember {
+        viewModel.stateInsert
+    }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val messages = getState.listMessageResult?.messageResult
+    val isFromCache = getState.listMessageResult?.isFromCache
+    val isLoading = getState.isLoading
+    val error = getState.errorMessage
 
 
     val lazyListState = rememberLazyListState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            SpecialTopBar(title = "Chat", isFromCache = stateGet.value.listMessageResult?.isFromCache) {
-                Firebase.auth.signOut()
+            SpecialTopBar(title = "Chat", isFromCache = isFromCache) {
+                viewModel.onEvent(ChatEvent.LogOut())
             }
         },
         bottomBar = {
@@ -46,43 +63,66 @@ fun Chat() {
                 viewModel.onEvent(ChatEvent.SendMessage(value))
                 value = ""
             }
+        },
+        snackbarHost = {
+            if (insertState.error.isNotBlank()) {
+                Log.v("Çıktı", insertState.error)
+                SpecialSnackBar(hostState = snackbarHostState, isLoading = false, errorMessage = insertState.error, success = "")
+            }
         }
     ) { paddingValues ->
 
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize(),
-            reverseLayout = true
-        ) {
-            stateGet.value.listMessageResult?.messageResult.let {
-                it?.let {messageResults ->
-                    if (messageResults.isEmpty()) {
-                        item {
-                            Text(text = "Not Data")
-                        }
-                    }
-                    else {
-                        itemsIndexed(messageResults) { _, b ->
+        if (messages.isNullOrEmpty() && !isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                Text(text = "Not Data")
+            }
+
+        } else if (!isLoading) {
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                reverseLayout = true
+            ) {
+                getState.listMessageResult?.messageResult.let {
+                    it?.let { messageResults ->
+                        itemsIndexed(messageResults) { _, item ->
+
                             Message(
-                                Firebase.auth.currentUser?.email == b.email,
-                                email = b.email.toString(),
-                                content = b.message.toString(),
-                                hasPendingWrites = b.hasPendingWrites
+                                messageOwner = Firebase.auth.currentUser?.email == item.email,
+                                email = item.email.toString(),
+                                content = item.message.toString(),
+                                hasPendingWrites = item.hasPendingWrites
                             )
                         }
                     }
-                }
 
-            }
-
-            if (stateGet.value.errorMessage.isNotBlank()) {
-                item {
-                    Text(text = stateGet.value.errorMessage)
                 }
             }
 
+        }
+        if (error.isNotBlank() && !isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(text = getState.errorMessage)
+            }
+        }
+
+        if (isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
 

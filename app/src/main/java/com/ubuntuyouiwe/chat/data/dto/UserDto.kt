@@ -8,5 +8,5 @@ data class UserDto(
     val email: String? = null,
     val photoUrl: Uri? = null,
     val isEmailVerified: Boolean? = null,
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
 )

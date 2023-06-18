@@ -101,7 +101,7 @@ fun Login(navController: NavController) {
                 label = {
                     Text(text = "E Mail")
                 },
-                prefix = {
+                leadingIcon = {
                     Icon(
                         imageVector = Icons.TwoTone.MailOutline,
                         contentDescription = "",
@@ -123,7 +123,7 @@ fun Login(navController: NavController) {
                 label = {
                     Text(text = "Password")
                 },
-                prefix = {
+                leadingIcon = {
                     Icon(
                         imageVector = Icons.TwoTone.Lock,
                         contentDescription = "",
@@ -132,7 +132,7 @@ fun Login(navController: NavController) {
 
 
                 },
-                suffix = {
+                trailingIcon = {
                     if (passwordShow) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_key_off_24),

@@ -7,6 +7,7 @@ import com.ubuntuyouiwe.chat.domain.use_case.auth.LoginInUseCase
 import com.ubuntuyouiwe.chat.domain.use_case.auth.SignUpUseCase
 import com.ubuntuyouiwe.chat.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

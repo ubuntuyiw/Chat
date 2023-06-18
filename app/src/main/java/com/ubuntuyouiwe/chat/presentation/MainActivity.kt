@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHostScreen(startDestination = startDestination)
             }
+
         }
     }
 }

@@ -1,13 +1,22 @@
 package com.ubuntuyouiwe.chat.presentation.components
 
+import android.content.Intent
+import android.provider.MediaStore
+import androidx.compose.foundation.background
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
+import com.ubuntuyouiwe.chat.R
 
 @Composable
 fun SpecialTextField(
@@ -21,8 +30,8 @@ fun SpecialTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isError: Boolean = false,
     shape: Shape = TextFieldDefaults.shape,
-    prefix: @Composable (() -> Unit)? = null,
-    suffix: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     TextField(
         value = value,
@@ -39,7 +48,9 @@ fun SpecialTextField(
         visualTransformation = visualTransformation,
         isError = isError,
         shape = shape,
-        prefix = prefix,
-        suffix = suffix
+        trailingIcon = trailingIcon,
+        leadingIcon = leadingIcon
+
+
     )
 }

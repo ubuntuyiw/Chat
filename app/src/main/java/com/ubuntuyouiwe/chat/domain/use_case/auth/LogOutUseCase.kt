@@ -1,23 +1,20 @@
 package com.ubuntuyouiwe.chat.domain.use_case.auth
 
-import com.ubuntuyouiwe.chat.domain.model.User
 import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.util.Resource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class AuthStateUseCase @Inject constructor(
+class LogOutUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-
-    operator fun invoke(): Flow<Resource<User?>> = flow {
+    operator fun invoke(): Flow<Resource<Any>> = flow{
         emit(Resource.Loading())
-        authRepository.listenUserOnlineStatus().catch {
-            emit(Resource.Error(it.localizedMessage))
-        }.collect {
-            emit(Resource.Success(it))
+        try {
+            emit(Resource.Success(authRepository.logOut()))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage))
         }
     }
 

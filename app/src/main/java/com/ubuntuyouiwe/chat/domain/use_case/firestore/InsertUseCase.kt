@@ -17,7 +17,7 @@ class InsertUseCase @Inject constructor(
         try {
             messagingRepository.insertMessage(messageResult)
             emit(Resource.Success())
-        } catch (e: FirebaseFirestoreException) {
+        } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage))
         }
     }

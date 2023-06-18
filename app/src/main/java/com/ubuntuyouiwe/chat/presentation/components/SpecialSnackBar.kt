@@ -10,9 +10,9 @@ import androidx.compose.runtime.LaunchedEffect
 @Composable
 fun SpecialSnackBar(
     hostState: SnackbarHostState,
-    isLoading: Boolean,
-    errorMessage: String,
-    success: String
+    isLoading: Boolean = false,
+    errorMessage: String = "",
+    success: String = ""
 ) {
     SnackbarHost(hostState) { data ->
         Snackbar(data)

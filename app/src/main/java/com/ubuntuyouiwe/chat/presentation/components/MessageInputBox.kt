@@ -1,5 +1,8 @@
 package com.ubuntuyouiwe.chat.presentation.components
 
+import android.content.Intent
+import android.provider.MediaStore
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -12,19 +15,24 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.ubuntuyouiwe.chat.R
 
 @Composable
 fun MessageInputBox(
-    value: String = "adawdff",
+    value: String,
     onValueChange: (value: String) -> Unit,
     send: () -> Unit
 ) {
@@ -51,14 +59,16 @@ fun MessageInputBox(
                 )
             },
             shape = RoundedCornerShape(32.dp),
-            suffix = {
-                Box {
+            trailingIcon = {
+                val context = LocalContext.current
+                IconButton(onClick = {
+                    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    context.startActivity(takePictureIntent)
+                }) {
                     Icon(
-                        imageVector = Icons.Default.Face,
+                        painter = painterResource(id = R.drawable.baseline_camera_24),
                         contentDescription = "",
-                        modifier = Modifier.align(
-                            Alignment.Center
-                        )
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
 
