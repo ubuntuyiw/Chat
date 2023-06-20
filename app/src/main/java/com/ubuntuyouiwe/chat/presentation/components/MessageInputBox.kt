@@ -53,7 +53,7 @@ fun MessageInputBox(
             maxLines = 5,
             placeholder = {
                 Text(
-                    "Type a message",
+                    "Type a chatGptMessageDto",
                     fontWeight = FontWeight.Light,
                     color = Color.Gray
                 )
@@ -87,7 +87,7 @@ fun MessageInputBox(
                 .align(Alignment.Bottom),
 
             ) {
-            Icon(Icons.Default.Send, contentDescription = "Send message")
+            Icon(Icons.Default.Send, contentDescription = "Send chatGptMessageDto")
         }
     }
 

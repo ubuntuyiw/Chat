@@ -4,6 +4,7 @@ import com.ubuntuyouiwe.chat.data.repository.AuthRepositoryImpl
 import com.ubuntuyouiwe.chat.data.repository.MessagingRepositoryImpl
 import com.ubuntuyouiwe.chat.data.repository.NotificationRepositoryImpl
 import com.ubuntuyouiwe.chat.data.source.local.DataStoreDataSource
+import com.ubuntuyouiwe.chat.data.source.remote.chatgpt.OpenAIDatasource
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
@@ -30,8 +31,9 @@ object RepositoryModule {
     @Singleton
     fun provideMessagingRepository(
         firebaseDataSource: FirebaseDataSource,
+        chatGpt: OpenAIDatasource
     ): MessagingRepository =
-        MessagingRepositoryImpl(firebaseDataSource)
+        MessagingRepositoryImpl(firebaseDataSource,chatGpt)
 
     @Provides
     @Singleton

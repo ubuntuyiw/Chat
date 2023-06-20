@@ -5,7 +5,7 @@ import com.ubuntuyouiwe.chat.data.dto.UserDto
 
 fun MessageResultDto.toHashMap(): HashMap<String, Any?> =
     hashMapOf(
-        "message" to message,
+        "chatGptMessageDto" to message,
         "email" to email,
         "date" to date
     )

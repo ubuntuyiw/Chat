@@ -41,11 +41,6 @@ class FirebaseDataSourceImpl @Inject constructor(
                     )
                 }
                 value?.let {
-                    it.documents.map { documentSnapshot ->
-                        documentSnapshot.toObject(MessagesDto::class.java)
-                        documentSnapshot.metadata.hasPendingWrites()
-                    }
-
                     trySend(Result.success(it))
                 } ?: kotlin.run {
 

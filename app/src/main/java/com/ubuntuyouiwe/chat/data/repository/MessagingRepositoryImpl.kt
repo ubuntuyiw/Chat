@@ -2,6 +2,7 @@ package com.ubuntuyouiwe.chat.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
+import com.ubuntuyouiwe.chat.data.source.remote.chatgpt.OpenAIDatasource
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MessagingRepositoryImpl @Inject constructor(
-    private val fireStore: FirebaseDataSource
+    private val fireStore: FirebaseDataSource,
+    private val chatGpt: OpenAIDatasource
 ) : MessagingRepository {
 
     override suspend fun insertMessage(messageResult: MessageResult) {
@@ -24,6 +26,16 @@ class MessagingRepositoryImpl @Inject constructor(
             data = messageDtoToHashMap,
             collection = FirebaseCollection.Message
         )
+
+        /*val request = OpenAIRequestDto(
+            model = "gpt-3.5-turbo",
+            chatGptMessageDtos = listOf(
+                ChatGptMessageDto(role = "system", content = "You are a helpful assistant."),
+                ChatGptMessageDto(role = "user", content = "Tell me a joke.")
+            )
+        )
+        val asd = chatGpt.completeChat(request)
+        Log.v("chatgptmessage", asd.toString())*/
     }
 
 
