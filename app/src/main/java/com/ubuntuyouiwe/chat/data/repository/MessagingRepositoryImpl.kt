@@ -20,7 +20,7 @@ class MessagingRepositoryImpl @Inject constructor(
 
     override suspend fun insertMessage(messageResult: MessageResult) {
         val messageDtoToHashMap = messageResult.toMessageResultDto().toHashMap()
-        fireStore.insert(
+        fireStore.add(
             data = messageDtoToHashMap,
             collection = FirebaseCollection.Message
         )
@@ -29,7 +29,7 @@ class MessagingRepositoryImpl @Inject constructor(
 
     @Throws(FirebaseFirestoreException::class)
     override fun getMessage(): Flow<Messages?> {
-        return fireStore.get(
+        return fireStore.addSnapshotListener(
             collection = FirebaseCollection.Message,
             orderBy = OrderBy("date", Query.Direction.DESCENDING),
         ).map {

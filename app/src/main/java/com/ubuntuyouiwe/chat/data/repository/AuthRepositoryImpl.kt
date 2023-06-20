@@ -1,81 +1,63 @@
 package com.ubuntuyouiwe.chat.data.repository
 
-import android.util.Log
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
-import com.ubuntuyouiwe.chat.data.dto.UserDto
-import com.ubuntuyouiwe.chat.data.source.local.DataStoreDataSource
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
-import com.ubuntuyouiwe.chat.data.util.toHashMap
+import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
 import com.ubuntuyouiwe.chat.data.util.toUser
-import com.ubuntuyouiwe.chat.data.util.toUserDto
 import com.ubuntuyouiwe.chat.domain.model.User
 import com.ubuntuyouiwe.chat.domain.model.UserCredentials
 import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.domain.util.toUserCredentialsDto
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.jvm.Throws
 
 class AuthRepositoryImpl @Inject constructor(
-    private val fireStore: FirebaseDataSource,
+    private val firebaseDatasource: FirebaseDataSource,
 ) : AuthRepository {
 
-    private val job = Job()
-    private val scope = CoroutineScope(Dispatchers.IO + job)
-    private var userDto: UserDto? = UserDto()
     override suspend fun signUp(userCredentials: UserCredentials) {
         val userCredentialsDto = userCredentials.toUserCredentialsDto()
-        val email = userCredentialsDto.email
-        val password = userCredentialsDto.password
-        val result = fireStore.signUp(email, password)
-        val data = result.user?.toUserDto()?.toHashMap()
-
-        createDeviceToken()?.let {
-            data?.set("deviceToken", it)
-        }
-        addUserToDatabase(data)
-
-
+        firebaseDatasource.signUp(userCredentialsDto.email, userCredentialsDto.password)
     }
 
     override suspend fun loginIn(userCredentials: UserCredentials) {
         val userCredentialsDto = userCredentials.toUserCredentialsDto()
         val email = userCredentialsDto.email
         val password = userCredentialsDto.password
-        fireStore.loginIn(email, password)
+        firebaseDatasource.loginIn(email, password)
     }
 
     @Throws
     override suspend fun logOut() {
-        val deviceToken = hashMapOf<String, Any?>(
-            "deviceToken" to createDeviceToken()
-        )
-        val documentId = getDocumentIdByEmail(userDto?.email, FirebaseCollection.Users)
-        val deviceTokenDelete = hashMapOf<String, Any?>(
-            "deviceToken" to FieldValue.delete()
-        )
+        val email = firebaseDatasource.user()?.email
+
+        val documentId = firebaseDatasource.whereEqualToDocument(
+            WhereEqualTo("email", email),
+            FirebaseCollection.Users
+        ).documents.firstOrNull()?.id
+
         documentId?.let {
-            update(documentId = it, data = deviceTokenDelete, FirebaseCollection.Users)
+            firebaseDatasource.update(
+                FirebaseCollection.Users,
+                documentId = it,
+                data = hashMapOf("deviceToken" to FieldValue.delete())
+            )
         }
 
         try {
-            fireStore.signOut()
+            firebaseDatasource.signOut()
         } catch (e: Exception) {
             documentId?.let {
-                update(documentId = it, data = deviceToken, FirebaseCollection.Users)
+
+                firebaseDatasource.update(
+                    FirebaseCollection.Users,
+                    documentId = it,
+                    data = hashMapOf("deviceToken" to firebaseDatasource.getDeviceToken())
+                )
+
             }
             throw Exception(e)
         }
@@ -83,67 +65,37 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun listenUserOnlineStatus(): Flow<User?> {
 
-        return fireStore.authState().map { authState ->
-            val currentUser = authState.currentUser
+        return firebaseDatasource.userStateListener().map { userDto ->
 
-            userDto = currentUser?.also { user ->
-                scope.launch {
-                    val deviceToken = createDeviceToken()
+            userDto?.also { user ->
+                val documentId = firebaseDatasource.whereEqualToDocument(
+                    whereEqualTo = WhereEqualTo("email", user.email),
+                    collection = FirebaseCollection.Users
+                ).documents.firstOrNull()?.id
 
-                    val lastEntryDate = hashMapOf<String, Any?>(
-                        "lastEntryDate" to Timestamp.now(),
-                        "deviceToken" to deviceToken
+                documentId?.let { id ->
+                    firebaseDatasource.update(
+                        data = hashMapOf(
+                            "lastEntryDate" to Timestamp.now(),
+                            "deviceToken" to firebaseDatasource.getDeviceToken()
+                        ),
+                        documentId = id,
+                        collection = FirebaseCollection.Users
                     )
-                    val documentId = getDocumentIdByEmail(user.email, FirebaseCollection.Users)
-
-                    documentId?.let {
-                        update(it, lastEntryDate, FirebaseCollection.Users)
-                    }
+                }?: run {
+                    firebaseDatasource.add(
+                        data = hashMapOf(
+                            "email" to user.email,
+                            "deviceToken" to firebaseDatasource.getDeviceToken(),
+                            "lastEntryDate" to Timestamp.now(),
+                        ),
+                        collection = FirebaseCollection.Users
+                    )
                 }
-            }?.toUserDto()
+            }?.toUser()
 
-            userDto?.toUser()
         }
     }
 
-
-    private suspend fun addUserToDatabase(data: HashMap<String, Any?>?) {
-        data?.let {
-            fireStore.insert(data = it, collection = FirebaseCollection.Users)
-        }
-    }
-
-
-    override suspend fun getDocumentIdByEmail(
-        email: String?,
-        collection: FirebaseCollection
-    ): String? {
-        return fireStore.findDocumentId(
-            field = "email",
-            value = email,
-            collection = collection
-        ).documents.firstOrNull()?.id
-    }
-
-    override suspend fun update(
-        documentId: String,
-        data: HashMap<String, Any?>,
-        collection: FirebaseCollection
-    ) {
-
-        fireStore.update(
-            data = data,
-            documentId = documentId,
-            collection = collection
-        )
-    }
-
-    private suspend fun createDeviceToken(): String? {
-        return fireStore.firebaseMessaging().token.await()
-    }
-
-    fun clear() {
-        scope.cancel()
-    }
 
 }

@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.presentation
+package com.ubuntuyouiwe.chat.presentation.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.presentation.navigation
+package com.ubuntuyouiwe.chat.presentation.activity
 
 import com.ubuntuyouiwe.chat.domain.model.User
 

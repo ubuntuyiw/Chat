@@ -1,9 +1,8 @@
-package com.ubuntuyouiwe.chat.presentation
+package com.ubuntuyouiwe.chat.presentation.activity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ubuntuyouiwe.chat.domain.use_case.auth.AuthStateUseCase
-import com.ubuntuyouiwe.chat.presentation.navigation.AuthState
 import com.ubuntuyouiwe.chat.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
