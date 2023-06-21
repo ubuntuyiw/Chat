@@ -15,11 +15,15 @@ import androidx.compose.material.icons.twotone.Lock
 import androidx.compose.material.icons.twotone.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +45,13 @@ import com.ubuntuyouiwe.chat.R
 import com.ubuntuyouiwe.chat.presentation.components.SpecialSnackBar
 import com.ubuntuyouiwe.chat.presentation.components.SpecialTextField
 import com.ubuntuyouiwe.chat.presentation.components.SpecialTopBar
+import com.ubuntuyouiwe.chat.presentation.login.components.login_snackbar.LoginSnackbar
+import com.ubuntuyouiwe.chat.presentation.login.components.login_text_field.LoginLabel
+import com.ubuntuyouiwe.chat.presentation.login.components.login_text_field.LoginLeadingIcon
+import com.ubuntuyouiwe.chat.presentation.login.components.login_text_field.LoginTrailingIcon
+import com.ubuntuyouiwe.chat.presentation.login.components.login_top_bar.LoginTopBarTitle
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Login(navController: NavController) {
 
@@ -63,21 +73,20 @@ fun Login(navController: NavController) {
         val transformedText = "\u26D3".repeat(text.text.length)
         TransformedText(AnnotatedString(transformedText), OffsetMapping.Identity)
     }
-
-    val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
 
     Scaffold(
         topBar = {
-            SpecialTopBar(title = "Login") {
-
-            }
+            TopAppBar(
+                title = { LoginTopBarTitle("Login") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                ))
         },
         snackbarHost = {
-
-            SpecialSnackBar(
-                hostState = snackbarHostState,
+            LoginSnackbar(
                 isLoading = state.isLoading,
                 errorMessage = state.error,
                 success = state.successMessage
@@ -91,75 +100,38 @@ fun Login(navController: NavController) {
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            SpecialTextField(
-                value = email, onValueChange = { email = it },
+
+
+            TextField(
+                value = email,
+                onValueChange = { email = it },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email
                 ),
                 isError = state.error.isNotBlank() && email.isBlank(),
                 modifier = Modifier.fillMaxWidth(0.8f),
-                label = {
-                    Text(text = "E Mail")
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.TwoTone.MailOutline,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-
-
-                }
-
+                label = { LoginLabel("E Mail") },
+                leadingIcon = { LoginLeadingIcon(Icons.TwoTone.MailOutline) }
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
 
-            SpecialTextField(
-                value = password, onValueChange = { password = it },
+            TextField(
+                value = password,
+                onValueChange = { password = it },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password
                 ),
-                label = {
-                    Text(text = "Password")
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.TwoTone.Lock,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-
-
-                },
-                trailingIcon = {
-                    if (passwordShow) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_key_off_24),
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable {
-                                passwordShow = false
-                            }
-                        )
-
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_key_24),
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable {
-                                passwordShow = true
-                            }
-                        )
-
-                    }
-                },
-                visualTransformation = if (passwordShow) visualTransformation else VisualTransformation.None,
                 isError = state.error.isNotBlank() && password.isBlank(),
                 modifier = Modifier.fillMaxWidth(0.8f),
+                label = { LoginLabel("Password") },
+                leadingIcon = { LoginLeadingIcon( Icons.TwoTone.Lock) },
+                trailingIcon = {
+                    LoginTrailingIcon(passwordShow = passwordShow, passwordShowChange = { passwordShow = it})
+                },
+                visualTransformation = if (passwordShow) visualTransformation else VisualTransformation.None,
 
-                )
+            )
 
             Spacer(modifier = Modifier.padding(16.dp))
 

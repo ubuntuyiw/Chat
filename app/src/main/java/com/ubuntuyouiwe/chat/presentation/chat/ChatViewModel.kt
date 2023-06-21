@@ -7,12 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
+import com.ubuntuyouiwe.chat.domain.model.chatgpt.request.ChatGptMessage
+import com.ubuntuyouiwe.chat.domain.model.chatgpt.request.OpenAIRequest
 import com.ubuntuyouiwe.chat.domain.use_case.auth.LogOutUseCase
 import com.ubuntuyouiwe.chat.domain.use_case.firestore.GetMessageUseCase
 import com.ubuntuyouiwe.chat.domain.use_case.firestore.InsertUseCase
+import com.ubuntuyouiwe.chat.domain.use_case.firestore.RequestChatGptUseCase
 import com.ubuntuyouiwe.chat.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -21,7 +25,8 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val insertUseCase: InsertUseCase,
     private val getMessageUseCase: GetMessageUseCase,
-    private val logOutUseCase: LogOutUseCase
+    private val logOutUseCase: LogOutUseCase,
+    private val requestChatGptUseCase: RequestChatGptUseCase
 ) : ViewModel() {
 
     private val _stateInsert = mutableStateOf(InsertState())
@@ -32,6 +37,9 @@ class ChatViewModel @Inject constructor(
 
     private val _stateLogOut = mutableStateOf(LogOutState())
     val stateLogOut: State<LogOutState> = _stateLogOut
+
+    private val _chatGptState = mutableStateOf(ChatGptState())
+    val chatGptState: State<ChatGptState> = _chatGptState
 
     private var getMessageJob: Job = Job()
 
@@ -45,6 +53,9 @@ class ChatViewModel @Inject constructor(
         when (event) {
             is ChatEvent.SendMessage -> {
                 insertMessage(messageResult)
+                if (event.chatGpt)
+                    chatGpt(event.message?: "")
+
             }
 
             is ChatEvent.LogOut -> {
@@ -69,6 +80,41 @@ class ChatViewModel @Inject constructor(
                     _stateLogOut.value = stateLogOut.value.copy(
                         isLoading = false,
                         errorMessage = it.message.toString()
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun chatGpt(message: String) {
+        val data = OpenAIRequest(
+            messages = listOf(
+                ChatGptMessage(role = "system" ,content = "You are an assistant who provides short but sufficiently clear answers to the asked questions."),
+                ChatGptMessage(role = "user" ,content = message)
+            )
+        )
+        requestChatGptUseCase(data).onEach {
+            when (it) {
+                is Resource.Success -> {
+                    _chatGptState.value = chatGptState.value.copy(
+                        isLoading = false,
+                        isSuccess = true,
+                        error = ""
+                    )
+
+                }
+                is Resource.Error -> {
+                    _chatGptState.value = chatGptState.value.copy(
+                        isLoading = false,
+                        isSuccess = false,
+                        error = it.message.toString()
+                    )
+                }
+                is Resource.Loading -> {
+                    _chatGptState.value = chatGptState.value.copy(
+                        isLoading = true,
+                        isSuccess = false,
+                        error = ""
                     )
                 }
             }
@@ -123,6 +169,7 @@ class ChatViewModel @Inject constructor(
                 is Resource.Loading -> {
                     _stateGet.value =
                         stateGet.value.copy(isLoading = true, errorMessage = "")
+                    delay(500) //TODO
                 }
             }
         }.launchIn(viewModelScope)

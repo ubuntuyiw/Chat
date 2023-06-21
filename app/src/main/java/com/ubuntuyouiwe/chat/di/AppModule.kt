@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -47,6 +48,7 @@ object AppModule {
     @Provides
     fun provideChuckerCollector(@ApplicationContext context: Context): ChuckerCollector =
         ChuckerCollector(context)
+
     @Singleton
     @Provides
     fun provideChucker(
@@ -59,20 +61,24 @@ object AppModule {
             .redactHeaders(emptySet())
             .alwaysReadResponseBody(false)
             .build()
+
     @Singleton
     @Provides
     fun provideOkHttpClient(chuckerInterceptor: ChuckerInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(chuckerInterceptor)
             .addInterceptor { chain ->
                 val newRequest = chain.request().newBuilder()
                     .addHeader("Authorization", API_KEY)
+                    .addHeader("Content-Type", "application/json")
                     .build()
                 chain.proceed(newRequest)
-            }
+            }.writeTimeout(120L, TimeUnit.SECONDS).readTimeout(120L, TimeUnit.SECONDS)
+            .connectTimeout(120L, TimeUnit.SECONDS)
+            .addInterceptor(chuckerInterceptor)
             .build()
 
     }
+
     @Singleton
     @Provides
     fun provideRetrofit(httpClient: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()

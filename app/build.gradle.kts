@@ -126,4 +126,7 @@ dependencies {
     //Chucker
     debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+
+    //Seismic
+    implementation("com.squareup:seismic:1.0.3")
 }

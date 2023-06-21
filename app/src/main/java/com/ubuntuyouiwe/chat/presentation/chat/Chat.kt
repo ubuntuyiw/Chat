@@ -41,6 +41,8 @@ fun Chat() {
     val insertState by remember {
         viewModel.stateInsert
     }
+
+    val chatGptState = viewModel.chatGptState
     val snackbarHostState = remember { SnackbarHostState() }
 
     val messages = getState.listMessageResult?.messageResult
@@ -49,24 +51,29 @@ fun Chat() {
     val error = getState.errorMessage
 
 
+
+
     val lazyListState = rememberLazyListState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            SpecialTopBar(title = "Chat", isFromCache = isFromCache) {
+            SpecialTopBar(title = "Chat", viewModel.chatGptState.value.isLoading, isFromCache = isFromCache) {
                 viewModel.onEvent(ChatEvent.LogOut())
+
             }
         },
         bottomBar = {
 
             MessageInputBox(value = value, onValueChange = { value = it }) {
-                viewModel.onEvent(ChatEvent.SendMessage(value))
+                viewModel.onEvent(ChatEvent.SendMessage(value,true))
                 value = ""
             }
         },
         snackbarHost = {
+            if (viewModel.chatGptState.value.error.isNotBlank()){
+                SpecialSnackBar(hostState = snackbarHostState, isLoading = false, errorMessage = viewModel.chatGptState.value.error, success = "")
+            }
             if (insertState.error.isNotBlank()) {
-                Log.v("Çıktı", insertState.error)
                 SpecialSnackBar(hostState = snackbarHostState, isLoading = false, errorMessage = insertState.error, success = "")
             }
         }

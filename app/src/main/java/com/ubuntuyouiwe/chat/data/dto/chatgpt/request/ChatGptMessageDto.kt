@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.data.dto.chatgpt
+package com.ubuntuyouiwe.chat.data.dto.chatgpt.request
 
 import kotlinx.serialization.Serializable
 
