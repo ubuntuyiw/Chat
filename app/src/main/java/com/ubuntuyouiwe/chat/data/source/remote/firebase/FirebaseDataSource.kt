@@ -1,7 +1,6 @@
 package com.ubuntuyouiwe.chat.data.source.remote.firebase
 
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ubuntuyouiwe.chat.data.dto.UserDto
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection

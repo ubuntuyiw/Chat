@@ -1,13 +1,11 @@
 package com.ubuntuyouiwe.chat.domain.use_case.auth
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuthException
 import com.ubuntuyouiwe.chat.domain.model.UserCredentials
 import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
 class LoginInUseCase @Inject constructor(
@@ -21,8 +19,6 @@ class LoginInUseCase @Inject constructor(
             emit(Resource.Success())
         } catch (e: FirebaseAuthException) {
             emit(Resource.Error(e.localizedMessage))
-        } catch (e: CancellationException) {
-            Log.v("çıktı", e.localizedMessage.toString())
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage))
         }

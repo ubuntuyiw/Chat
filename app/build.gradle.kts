@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.konan.properties.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -8,12 +6,7 @@ plugins {
 
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
-
-    kotlin("plugin.serialization")
 }
-val apiKey: String = Properties().apply {
-    rootProject.file("local.properties").reader().use { load(it) }
-}.getProperty("API_KEY")!!
 
 android {
     namespace = "com.ubuntuyouiwe.chat"
@@ -30,11 +23,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String","API_KEY", apiKey)
     }
-    buildFeatures {
-        buildConfig = true
-    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -105,28 +95,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
-    //Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
     //Splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    //Preferences DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
 
-    //Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
-    //OkHttp3
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
-
-    //Chucker
-    debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
-    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
-
-    //Seismic
-    implementation("com.squareup:seismic:1.0.3")
 }

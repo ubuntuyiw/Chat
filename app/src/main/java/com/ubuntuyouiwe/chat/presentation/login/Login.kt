@@ -1,6 +1,5 @@
 package com.ubuntuyouiwe.chat.presentation.login
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +15,8 @@ import androidx.compose.material.icons.twotone.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -31,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -41,10 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.ubuntuyouiwe.chat.R
-import com.ubuntuyouiwe.chat.presentation.components.SpecialSnackBar
-import com.ubuntuyouiwe.chat.presentation.components.SpecialTextField
-import com.ubuntuyouiwe.chat.presentation.components.SpecialTopBar
 import com.ubuntuyouiwe.chat.presentation.login.components.login_snackbar.LoginSnackbar
 import com.ubuntuyouiwe.chat.presentation.login.components.login_text_field.LoginLabel
 import com.ubuntuyouiwe.chat.presentation.login.components.login_text_field.LoginLeadingIcon
@@ -53,7 +45,7 @@ import com.ubuntuyouiwe.chat.presentation.login.components.login_top_bar.LoginTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Login(navController: NavController) {
+fun Login() {
 
     val viewModel: LoginViewModel = hiltViewModel()
 
@@ -83,7 +75,8 @@ fun Login(navController: NavController) {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ))
+                )
+            )
         },
         snackbarHost = {
             LoginSnackbar(
@@ -125,13 +118,15 @@ fun Login(navController: NavController) {
                 isError = state.error.isNotBlank() && password.isBlank(),
                 modifier = Modifier.fillMaxWidth(0.8f),
                 label = { LoginLabel("Password") },
-                leadingIcon = { LoginLeadingIcon( Icons.TwoTone.Lock) },
+                leadingIcon = { LoginLeadingIcon(Icons.TwoTone.Lock) },
                 trailingIcon = {
-                    LoginTrailingIcon(passwordShow = passwordShow, passwordShowChange = { passwordShow = it})
+                    LoginTrailingIcon(
+                        passwordShow = passwordShow,
+                        passwordShowChange = { passwordShow = it })
                 },
                 visualTransformation = if (passwordShow) visualTransformation else VisualTransformation.None,
 
-            )
+                )
 
             Spacer(modifier = Modifier.padding(16.dp))
 

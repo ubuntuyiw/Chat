@@ -5,15 +5,12 @@ import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
 import com.ubuntuyouiwe.chat.domain.repository.NotificationRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class NotificationRepositoryImpl @Inject constructor(
     private val firebaseDataSource: FirebaseDataSource
-): NotificationRepository {
+) : NotificationRepository {
     init {
         isNotificationDelegationEnabled(false)
 
@@ -22,6 +19,7 @@ class NotificationRepositoryImpl @Inject constructor(
     override suspend fun createDeviceToken(): String? {
         return firebaseDataSource.firebaseMessaging().token.await()
     }
+
     override fun isNotificationDelegationEnabled(boolean: Boolean) {
         firebaseDataSource.firebaseMessaging().isNotificationDelegationEnabled = boolean
     }
@@ -42,11 +40,10 @@ class NotificationRepositoryImpl @Inject constructor(
                 FirebaseCollection.Users,
                 documentId = id,
                 data = hashMapOf("deviceToken" to onNewToken)
-                )
+            )
         }
 
     }
-
 
 
 }

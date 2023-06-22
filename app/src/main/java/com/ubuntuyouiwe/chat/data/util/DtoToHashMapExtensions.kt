@@ -1,9 +1,7 @@
 package com.ubuntuyouiwe.chat.data.util
 
-import com.ubuntuyouiwe.chat.data.dto.ChatRoomDto
-import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 import com.ubuntuyouiwe.chat.data.dto.UserDto
-import com.ubuntuyouiwe.chat.domain.model.ChatRoom
+import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 
 fun MessageResultDto.toHashMap(): HashMap<String, Any?> =
     hashMapOf(
@@ -18,10 +16,3 @@ fun UserDto.toHashMap(): HashMap<String, Any?> =
         "email" to email
     )
 
-fun ChatRoomDto.asHashMap(): HashMap<String,Any?> =
-    hashMapOf(
-        "name" to this.name,
-        "memberIds" to this.memberIds,
-        "photoURL" to this.photoURL,
-        "totalMessages" to this.totalMessages,
-    )

@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:name=".ChatApp"
@@ -36,7 +35,7 @@
             </intent-filter>
         </activity>
 
-
+        <receiver android:name=".data.source.remote.firebase.service.NotificationReplyReceiver" />
         <service
             android:name=".data.source.remote.firebase.service.NotificationService"
             android:exported="false">

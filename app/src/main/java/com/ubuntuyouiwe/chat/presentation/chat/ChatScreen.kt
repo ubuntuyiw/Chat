@@ -1,6 +1,5 @@
 package com.ubuntuyouiwe.chat.presentation.chat
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,7 +26,7 @@ import com.ubuntuyouiwe.chat.presentation.components.SpecialSnackBar
 import com.ubuntuyouiwe.chat.presentation.components.SpecialTopBar
 
 @Composable
-fun Chat() {
+fun ChatScreen() {
 
     val viewModel: ChatViewModel = hiltViewModel()
 
@@ -42,7 +41,6 @@ fun Chat() {
         viewModel.stateInsert
     }
 
-    val chatGptState = viewModel.chatGptState
     val snackbarHostState = remember { SnackbarHostState() }
 
     val messages = getState.listMessageResult?.messageResult
@@ -51,13 +49,14 @@ fun Chat() {
     val error = getState.errorMessage
 
 
-
-
     val lazyListState = rememberLazyListState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            SpecialTopBar(title = "Chat", viewModel.chatGptState.value.isLoading, isFromCache = isFromCache) {
+            SpecialTopBar(
+                title = "Chat",
+                isFromCache = isFromCache
+            ) {
                 viewModel.onEvent(ChatEvent.LogOut())
 
             }
@@ -65,16 +64,18 @@ fun Chat() {
         bottomBar = {
 
             MessageInputBox(value = value, onValueChange = { value = it }) {
-                viewModel.onEvent(ChatEvent.SendMessage(value,true))
+                viewModel.onEvent(ChatEvent.SendMessage(value))
                 value = ""
             }
         },
         snackbarHost = {
-            if (viewModel.chatGptState.value.error.isNotBlank()){
-                SpecialSnackBar(hostState = snackbarHostState, isLoading = false, errorMessage = viewModel.chatGptState.value.error, success = "")
-            }
             if (insertState.error.isNotBlank()) {
-                SpecialSnackBar(hostState = snackbarHostState, isLoading = false, errorMessage = insertState.error, success = "")
+                SpecialSnackBar(
+                    hostState = snackbarHostState,
+                    isLoading = false,
+                    errorMessage = insertState.error,
+                    success = ""
+                )
             }
         }
     ) { paddingValues ->
@@ -86,7 +87,7 @@ fun Chat() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                Text(text = "Not Data")
+                Text(text = "No messages found.")
             }
 
         } else if (!isLoading) {

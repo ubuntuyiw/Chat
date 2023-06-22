@@ -1,6 +1,5 @@
 package com.ubuntuyouiwe.chat.domain.use_case.firestore
 
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
 import com.ubuntuyouiwe.chat.util.Resource

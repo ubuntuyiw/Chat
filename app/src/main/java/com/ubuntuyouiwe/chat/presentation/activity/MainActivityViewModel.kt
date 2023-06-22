@@ -16,11 +16,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val authStateUseCase: AuthStateUseCase
-): ViewModel() {
+) : ViewModel() {
 
     private val _stateAuth = MutableStateFlow(AuthState())
     val stateAuth: StateFlow<AuthState> = _stateAuth.asStateFlow()
     private var getAuthJob: Job = Job()
+
     init {
         getAuthStateListener()
     }

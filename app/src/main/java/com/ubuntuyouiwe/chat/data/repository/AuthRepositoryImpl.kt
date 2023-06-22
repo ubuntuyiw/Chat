@@ -29,6 +29,7 @@ class AuthRepositoryImpl @Inject constructor(
         val password = userCredentialsDto.password
         firebaseDatasource.loginIn(email, password)
     }
+    override fun user() = firebaseDatasource.user()?.toUser()
 
     @Throws
     override suspend fun logOut() {

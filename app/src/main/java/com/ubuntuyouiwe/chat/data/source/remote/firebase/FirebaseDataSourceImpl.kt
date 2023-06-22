@@ -7,7 +7,6 @@ import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ubuntuyouiwe.chat.data.dto.UserDto
-import com.ubuntuyouiwe.chat.data.dto.messages.MessagesDto
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
 import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
@@ -103,7 +102,7 @@ class FirebaseDataSourceImpl @Inject constructor(
         awaitClose { auth.removeAuthStateListener(listener) }
     }
 
-    override fun user():  UserDto? = auth.currentUser?.toUserDto()
+    override fun user(): UserDto? = auth.currentUser?.toUserDto()
 
     override fun signOut() {
         auth.signOut()

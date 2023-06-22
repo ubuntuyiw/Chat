@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpecialTopBar(title: String, chatGptState: Boolean, isFromCache: Boolean? = false, signOutClick: () -> Unit) {
+fun SpecialTopBar(title: String, isFromCache: Boolean? = false, signOutClick: () -> Unit) {
     var dropdownMenu by remember {
         mutableStateOf(false)
     }
@@ -42,8 +42,6 @@ fun SpecialTopBar(title: String, chatGptState: Boolean, isFromCache: Boolean? = 
                 if (isFromCache == true) {
                     Text(text = "Syncing...", fontSize = 15.sp)
                 }
-                if (chatGptState)
-                    Text(text = "AI yazıyor...")
             }
 
         },

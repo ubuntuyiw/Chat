@@ -1,9 +1,9 @@
 package com.ubuntuyouiwe.chat.data.util
 
 import com.google.firebase.auth.FirebaseUser
+import com.ubuntuyouiwe.chat.data.dto.UserDto
 import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 import com.ubuntuyouiwe.chat.data.dto.messages.MessagesDto
-import com.ubuntuyouiwe.chat.data.dto.UserDto
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.Messages
 import com.ubuntuyouiwe.chat.domain.model.User

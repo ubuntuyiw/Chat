@@ -15,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.ubuntuyouiwe.chat.R
 import com.ubuntuyouiwe.chat.domain.repository.NotificationRepository
 import com.ubuntuyouiwe.chat.presentation.activity.MainActivity
+import com.ubuntuyouiwe.chat.util.notification_channel.ConstantChannels.CHAT_ID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,13 +44,12 @@ class NotificationService() : FirebaseMessagingService() {
 
     }
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-    }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        notificationStart(baseContext)
+        notificationStart(baseContext,message)
+        Log.v("tokenss", "first" + message)
+
     }
 
     override fun onDestroy() {
@@ -57,32 +57,40 @@ class NotificationService() : FirebaseMessagingService() {
         serviceJob.cancel()
     }
 
+    override fun getStartCommandIntent(originalIntent: Intent?): Intent {
+        val asd = RemoteInput.getResultsFromIntent(originalIntent!!)
+        if (asd != null) {
+            val replyText = asd.getCharSequence("key_text_reply")
+            Log.v("tokenss", replyText.toString())
+        }
+        return super.getStartCommandIntent(originalIntent)
 
-    fun notificationStart(baseContext: Context) {
-
-        val builder: NotificationCompat.Builder
-
-
-
-
-
-        val snoozeIntent = Intent(baseContext, MainActivity::class.java)
-        snoozeIntent.action = "ACTION_SNOOZE"
-        snoozeIntent.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0)
+    }
+    private fun notificationStart(baseContext: Context, remoteMessage: RemoteMessage) {
 
 
-        val message = NotificationCompat.MessagingStyle.Message(
-            "Merhaba, nasılsın?",
+        val replyIntent = Intent(baseContext, NotificationReplyReceiver::class.java)
+
+        val replyPendingIntent = PendingIntent.getBroadcast(baseContext, 0, replyIntent,
+            PendingIntent.FLAG_MUTABLE)
+
+        val person =  Person.Builder()
+            .setName(remoteMessage.data.toString())
+            .setImportant(true)
+            .build()
+
+        val message = remoteMessage.data.toString()
+
+
+        val notificationMessage = NotificationCompat.MessagingStyle.Message(
+            message,
             System.currentTimeMillis(),
-            Person.Builder()
-                .setName("İrem")
-                .build()
+            person
         )
 
-
-        val textInput = Intent(baseContext, MainActivity::class.java)
-        val chooserIntent = Intent.createChooser(textInput, "Cevapla")
-        val chooserPendingIntent = PendingIntent.getBroadcast(baseContext, 0, chooserIntent, PendingIntent.FLAG_UPDATE_CURRENT  or PendingIntent.FLAG_MUTABLE)
+        val style = NotificationCompat.MessagingStyle(person)
+            .addMessage(notificationMessage)
+            .addHistoricMessage(notificationMessage)
 
 
 
@@ -93,34 +101,19 @@ class NotificationService() : FirebaseMessagingService() {
         val replyAction = NotificationCompat.Action.Builder(
             R.drawable.baseline_access_time_24,
             "Cevapla",
-            chooserPendingIntent
+            replyPendingIntent
         ).addRemoteInput(remoteInput)
             .build()
 
-        val person = Person.Builder()
-            .setName("dwa")
-            .build()
 
-
-        val channelId = "Kanalid"
-        val channelName = "Kanal Adı"
-        val channelPromotion = "Kanal tanıtım"
-        val channelPriority = NotificationManager.IMPORTANCE_HIGH
-        var channel: NotificationChannel? = notificationAdmin.getNotificationChannel(channelId)
-
-        if (channel == null) {
-            channel = NotificationChannel(channelId, channelName, channelPriority)
-            channel.description = channelPromotion
-            notificationAdmin.createNotificationChannel(channel)
-        }
-        builder = NotificationCompat.Builder(baseContext, channelId).setSmallIcon(R.drawable.baseline_camera_24)
-        builder.addAction(replyAction).addAction(replyAction)
-            .setStyle(NotificationCompat.MessagingStyle(person)
-                .addMessage(message))
+        val builder = NotificationCompat.Builder(baseContext, CHAT_ID)
+            .setSmallIcon(R.drawable.baseline_camera_24)
+        builder.addAction(replyAction)
+            .setStyle(style)
+            .addAction(replyAction)
             .setCategory(Notification.CATEGORY_MESSAGE)
 
-        val uuid:Int= Random.nextInt()
-        notificationAdmin.notify(uuid, builder.build())
+        notificationAdmin.notify(0, builder.build())
     }
 }
 

@@ -1,7 +1,5 @@
 package com.ubuntuyouiwe.chat.domain.repository
 
-import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
-import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
 import com.ubuntuyouiwe.chat.domain.model.User
 import com.ubuntuyouiwe.chat.domain.model.UserCredentials
 import kotlinx.coroutines.flow.Flow
@@ -16,4 +14,6 @@ interface AuthRepository {
 
 
     suspend fun logOut()
+
+    fun user(): User?
 }

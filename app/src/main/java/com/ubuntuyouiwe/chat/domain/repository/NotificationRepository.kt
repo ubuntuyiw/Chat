@@ -1,7 +1,6 @@
 package com.ubuntuyouiwe.chat.domain.repository
 
 import com.google.firebase.messaging.RemoteMessage
-import kotlinx.coroutines.tasks.await
 
 interface NotificationRepository {
 
