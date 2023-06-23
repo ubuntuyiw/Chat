@@ -30,6 +30,7 @@ class NotificationReplyReceiver : BroadcastReceiver() {
         job = CoroutineScope(Dispatchers.IO).launch {
             val remoteInput = RemoteInput.getResultsFromIntent(intent)
             if (remoteInput != null) {
+
                 val replyText = remoteInput.getCharSequence("key_text_reply")
 
                 messagingRepository.insertMessage(
@@ -45,9 +46,6 @@ class NotificationReplyReceiver : BroadcastReceiver() {
         job?.invokeOnCompletion {
             NotificationManagerCompat.from(context).cancel(0)
         }
-
-
-
 
     }
 

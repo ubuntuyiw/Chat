@@ -13,8 +13,10 @@ object NotificationChannelCreator {
         val channelId = CHAT_ID
         val channelName = CHAT_NAME
         val channelPriority = NotificationManager.IMPORTANCE_HIGH
-        var channel: NotificationChannel? = notificationAdmin.getNotificationChannel(channelId)
-
+        var channel: NotificationChannel? = notificationAdmin.getNotificationChannel(channelId).apply {
+            description = "description"
+            setShowBadge(false)
+        }
 
         if (channel == null) {
             channel = NotificationChannel(channelId, channelName, channelPriority)
