@@ -5,14 +5,14 @@ import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 
 fun MessageResultDto.toHashMap(): HashMap<String, Any?> =
     hashMapOf(
-        "message" to message,
-        "email" to email,
-        "date" to date
+        DatabaseFieldNames.MESSAGE.fieldNames to message,
+        DatabaseFieldNames.EMAIL.fieldNames to email,
+        DatabaseFieldNames.DATE.fieldNames to date
     )
 
 fun UserDto.toHashMap(): HashMap<String, Any?> =
     hashMapOf(
-        "uid" to uid,
-        "email" to email
+        DatabaseFieldNames.UID.fieldNames to uid,
+        DatabaseFieldNames.UID.fieldNames to email
     )
 

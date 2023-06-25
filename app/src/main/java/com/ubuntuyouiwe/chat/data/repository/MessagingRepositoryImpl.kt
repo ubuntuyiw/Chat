@@ -3,6 +3,7 @@ package com.ubuntuyouiwe.chat.data.repository
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
+import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
 import com.ubuntuyouiwe.chat.data.util.toHashMap
@@ -33,7 +34,7 @@ class MessagingRepositoryImpl @Inject constructor(
     override fun getMessage(): Flow<Messages?> {
         return fireStore.addSnapshotListener(
             collection = FirebaseCollection.Message,
-            orderBy = OrderBy("date", Query.Direction.DESCENDING),
+            orderBy = OrderBy(DatabaseFieldNames.DATE, Query.Direction.DESCENDING),
         ).map {
             if (it.isSuccess) {
                 Messages(

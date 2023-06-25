@@ -1,5 +1,6 @@
 package com.ubuntuyouiwe.chat.di
 
+import android.app.NotificationManager
 import com.ubuntuyouiwe.chat.data.repository.AuthRepositoryImpl
 import com.ubuntuyouiwe.chat.data.repository.MessagingRepositoryImpl
 import com.ubuntuyouiwe.chat.data.repository.NotificationRepositoryImpl
@@ -35,8 +36,9 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideNotificationService(
-        firebaseDataSource: FirebaseDataSource
-    ): NotificationRepository = NotificationRepositoryImpl(firebaseDataSource)
+        firebaseDataSource: FirebaseDataSource,
+        notificationAdmin: NotificationManager
+    ): NotificationRepository = NotificationRepositoryImpl(firebaseDataSource, notificationAdmin)
 
 
 }

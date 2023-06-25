@@ -7,6 +7,7 @@ import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ubuntuyouiwe.chat.data.dto.UserDto
+import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
 import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
@@ -30,7 +31,7 @@ class FirebaseDataSourceImpl @Inject constructor(
     ): Flow<Result<QuerySnapshot>> = callbackFlow {
 
         val registration = fireStore.collection(collection.name)
-            .orderBy(orderBy.field, orderBy.direction)
+            .orderBy(orderBy.field.fieldNames, orderBy.direction)
             .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                 error?.let {
                     trySendBlocking(
@@ -61,7 +62,7 @@ class FirebaseDataSourceImpl @Inject constructor(
         collection: FirebaseCollection
     ) {
         val result = fireStore.collection(collection.name).add(data).await()
-        data["id"] = result.id
+        data[DatabaseFieldNames.ID.fieldNames] = result.id
         result.update(data)
     }
 
@@ -70,7 +71,7 @@ class FirebaseDataSourceImpl @Inject constructor(
         collection: FirebaseCollection
     ): QuerySnapshot {
         return fireStore.collection(collection.name)
-            .whereEqualTo(whereEqualTo.field, whereEqualTo.value)
+            .whereEqualTo(whereEqualTo.field.fieldNames, whereEqualTo.value)
             .get().await()
     }
 

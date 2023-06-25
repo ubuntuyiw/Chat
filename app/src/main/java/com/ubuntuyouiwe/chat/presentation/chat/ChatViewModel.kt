@@ -12,10 +12,13 @@ import com.ubuntuyouiwe.chat.domain.use_case.firestore.GetMessageUseCase
 import com.ubuntuyouiwe.chat.domain.use_case.firestore.InsertUseCase
 import com.ubuntuyouiwe.chat.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel

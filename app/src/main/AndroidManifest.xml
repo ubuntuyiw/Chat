@@ -30,6 +30,7 @@
             android:allowTaskReparenting="true"
             android:resizeableActivity="true"
             android:allowEmbedded="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|density"
             android:supportsPictureInPicture="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.App.Starting">
@@ -40,15 +41,23 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".data.source.remote.firebase.service.NotificationReplyReceiver" />
+        <receiver android:name=".receiver.NotificationReplyReceiver" />
         <service
-            android:name=".data.source.remote.firebase.service.NotificationService"
+            android:name=".service.NotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
+
     </application>
+
+
 
 </manifest>

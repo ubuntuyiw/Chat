@@ -3,6 +3,7 @@ package com.ubuntuyouiwe.chat.data.repository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
+import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
 import com.ubuntuyouiwe.chat.data.util.toUser
@@ -29,6 +30,7 @@ class AuthRepositoryImpl @Inject constructor(
         val password = userCredentialsDto.password
         firebaseDatasource.loginIn(email, password)
     }
+
     override fun user() = firebaseDatasource.user()?.toUser()
 
     @Throws
@@ -36,7 +38,7 @@ class AuthRepositoryImpl @Inject constructor(
         val email = firebaseDatasource.user()?.email
 
         val documentId = firebaseDatasource.whereEqualToDocument(
-            WhereEqualTo("email", email),
+            WhereEqualTo(DatabaseFieldNames.EMAIL, email),
             FirebaseCollection.Users
         ).documents.firstOrNull()?.id
 
@@ -44,7 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
             firebaseDatasource.update(
                 FirebaseCollection.Users,
                 documentId = it,
-                data = hashMapOf("deviceToken" to FieldValue.delete())
+                data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to FieldValue.delete())
             )
         }
 
@@ -56,7 +58,7 @@ class AuthRepositoryImpl @Inject constructor(
                 firebaseDatasource.update(
                     FirebaseCollection.Users,
                     documentId = it,
-                    data = hashMapOf("deviceToken" to firebaseDatasource.getDeviceToken())
+                    data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken())
                 )
 
             }
@@ -70,25 +72,25 @@ class AuthRepositoryImpl @Inject constructor(
 
             userDto?.also { user ->
                 val documentId = firebaseDatasource.whereEqualToDocument(
-                    whereEqualTo = WhereEqualTo("email", user.email),
+                    whereEqualTo = WhereEqualTo(DatabaseFieldNames.EMAIL, user.email),
                     collection = FirebaseCollection.Users
                 ).documents.firstOrNull()?.id
 
                 documentId?.let { id ->
                     firebaseDatasource.update(
                         data = hashMapOf(
-                            "lastEntryDate" to Timestamp.now(),
-                            "deviceToken" to firebaseDatasource.getDeviceToken()
+                            DatabaseFieldNames.LAST_ENTRY_DATE.fieldNames to Timestamp.now(),
+                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken()
                         ),
                         documentId = id,
                         collection = FirebaseCollection.Users
                     )
-                }?: run {
+                } ?: run {
                     firebaseDatasource.add(
                         data = hashMapOf(
-                            "email" to user.email,
-                            "deviceToken" to firebaseDatasource.getDeviceToken(),
-                            "lastEntryDate" to Timestamp.now(),
+                            DatabaseFieldNames.EMAIL.fieldNames to user.email,
+                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken(),
+                            DatabaseFieldNames.LAST_ENTRY_DATE.fieldNames to Timestamp.now(),
                         ),
                         collection = FirebaseCollection.Users
                     )

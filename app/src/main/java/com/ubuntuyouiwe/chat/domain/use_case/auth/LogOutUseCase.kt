@@ -4,6 +4,7 @@ import com.ubuntuyouiwe.chat.domain.repository.AuthRepository
 import com.ubuntuyouiwe.chat.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class LogOutUseCase @Inject constructor(
@@ -16,6 +17,8 @@ class LogOutUseCase @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage))
         }
+
+
     }
 
 }
