@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.di
+package com.ubuntuyouiwe.chat.di.app_module
 
 import android.app.NotificationManager
 import com.ubuntuyouiwe.chat.data.repository.AuthRepositoryImpl

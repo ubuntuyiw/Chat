@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.di
+package com.ubuntuyouiwe.chat.di.app_module
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

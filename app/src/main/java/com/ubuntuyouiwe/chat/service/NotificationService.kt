@@ -36,7 +36,8 @@ class NotificationService() : FirebaseMessagingService() {
             remoteMessage = message,
             localMessage = null,
             false,
-            channel = NotificationChannelInfo.CHAT_ID
+            channel = NotificationChannelInfo.CHAT_ID,
+            false
         )
 
     }

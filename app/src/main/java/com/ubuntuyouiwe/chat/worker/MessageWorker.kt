@@ -43,7 +43,8 @@ class MessageWorker @AssistedInject constructor(
                     remoteMessage = null,
                     localMessage = replyText,
                     false,
-                    channel = NotificationChannelInfo.CHAT_ID
+                    channel = NotificationChannelInfo.CHAT_ID,
+                    true
                 )
                 Result.success()
 

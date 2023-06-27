@@ -37,18 +37,25 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logOut() {
         val email = firebaseDatasource.user()?.email
 
-        val documentId = firebaseDatasource.whereEqualToDocument(
+        val document = firebaseDatasource.whereEqualToDocument(
             WhereEqualTo(DatabaseFieldNames.EMAIL, email),
             FirebaseCollection.Users
-        ).documents.firstOrNull()?.id
+        ).documents
+        val documentId = document.firstOrNull()?.id
+
+        val deviceTokens = document.firstOrNull()?.get(DatabaseFieldNames.DEVICE_TOKEN.fieldNames) as MutableList<*>
+        deviceTokens.remove(firebaseDatasource.getDeviceToken())
 
         documentId?.let {
             firebaseDatasource.update(
-                FirebaseCollection.Users,
-                documentId = it,
-                data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to FieldValue.delete())
+                data = hashMapOf(
+                    DatabaseFieldNames.DEVICE_TOKEN.fieldNames to deviceTokens,
+                ),
+                collection = FirebaseCollection.Users,
+                documentId = it
             )
         }
+
 
         try {
             firebaseDatasource.signOut()
@@ -58,7 +65,7 @@ class AuthRepositoryImpl @Inject constructor(
                 firebaseDatasource.update(
                     FirebaseCollection.Users,
                     documentId = it,
-                    data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken())
+                    data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to  listOf(firebaseDatasource.getDeviceToken()))
                 )
 
             }
@@ -66,21 +73,31 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+
     override fun listenUserOnlineStatus(): Flow<User?> {
-
         return firebaseDatasource.userStateListener().map { userDto ->
-
             userDto?.also { user ->
-                val documentId = firebaseDatasource.whereEqualToDocument(
-                    whereEqualTo = WhereEqualTo(DatabaseFieldNames.EMAIL, user.email),
-                    collection = FirebaseCollection.Users
-                ).documents.firstOrNull()?.id
+                val document = firebaseDatasource.whereEqualToDocument(
+                    WhereEqualTo(DatabaseFieldNames.EMAIL, user.email),
+                    FirebaseCollection.Users
+                ).documents
+
+                val documentId = document.firstOrNull()?.id
+
+                val deviceTokensObject = document.firstOrNull()?.get(DatabaseFieldNames.DEVICE_TOKEN.fieldNames)
+                val deviceTokens = deviceTokensObject?.let { it as? List<*> }?.map { it.toString() }?.toMutableList()
+
+                val deviceTokensSet = deviceTokens?.toMutableSet()
+
+                if (deviceTokensSet?.contains(firebaseDatasource.getDeviceToken()) == false) {
+                    deviceTokensSet.add(firebaseDatasource.getDeviceToken() ?: "")
+                }
 
                 documentId?.let { id ->
                     firebaseDatasource.update(
                         data = hashMapOf(
                             DatabaseFieldNames.LAST_ENTRY_DATE.fieldNames to Timestamp.now(),
-                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken()
+                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to deviceTokensSet?.toList()
                         ),
                         documentId = id,
                         collection = FirebaseCollection.Users
@@ -89,14 +106,13 @@ class AuthRepositoryImpl @Inject constructor(
                     firebaseDatasource.add(
                         data = hashMapOf(
                             DatabaseFieldNames.EMAIL.fieldNames to user.email,
-                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to firebaseDatasource.getDeviceToken(),
+                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to deviceTokensSet?.toList(),
                             DatabaseFieldNames.LAST_ENTRY_DATE.fieldNames to Timestamp.now(),
                         ),
                         collection = FirebaseCollection.Users
                     )
                 }
             }?.toUser()
-
         }
     }
 

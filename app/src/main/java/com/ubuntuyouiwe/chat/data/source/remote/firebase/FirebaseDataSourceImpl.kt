@@ -111,5 +111,4 @@ class FirebaseDataSourceImpl @Inject constructor(
 
     override fun firebaseMessaging(): FirebaseMessaging = messaging
     override suspend fun getDeviceToken(): String? = firebaseMessaging().token.await()
-
 }

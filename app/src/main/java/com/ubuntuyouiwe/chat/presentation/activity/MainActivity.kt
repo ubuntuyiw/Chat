@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ubuntuyouiwe.chat.domain.repository.NotificationRepository
 import com.ubuntuyouiwe.chat.presentation.navigation.NavHostScreen
 import com.ubuntuyouiwe.chat.presentation.navigation.Screen
+import com.ubuntuyouiwe.chat.presentation.permission_handler.PermissionHandler
 import com.ubuntuyouiwe.chat.ui.theme.ChatTheme
 import com.ubuntuyouiwe.chat.util.notification_channel.NotificationOnEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var notificationRepository: NotificationRepository
 
-
+    @Inject
+    lateinit var permissionHandler: PermissionHandler
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -45,7 +47,13 @@ class MainActivity : ComponentActivity() {
         if (NotificationOnEvent.OPEN.actionName == intent.getStringExtra(NotificationOnEvent.OPEN.actionName)) {
             notificationRepository.messages.clear()
         }
+
+
+
+        permissionHandler.requestNotificationPermission()
     }
+
+
 
 
 }

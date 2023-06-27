@@ -34,7 +34,8 @@ class NotificationReplyReceiver : BroadcastReceiver() {
                             remoteMessage = null,
                             localMessage = "Blank message is not sent",
                             true,
-                            channel = NotificationChannelInfo.CHAT_ID
+                            channel = NotificationChannelInfo.CHAT_ID,
+                            true
 
                         )
                         return

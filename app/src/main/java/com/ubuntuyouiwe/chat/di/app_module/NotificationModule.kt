@@ -1,4 +1,4 @@
-package com.ubuntuyouiwe.chat.di
+package com.ubuntuyouiwe.chat.di.app_module
 
 import android.app.NotificationManager
 import android.content.Context
@@ -11,13 +11,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object NotificationModule {
 
     @Provides
     @Singleton
     fun provideNotificationManager(@ApplicationContext appContext: Context): NotificationManager {
         return appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
+
 
 
 }

@@ -11,12 +11,12 @@ import android.graphics.drawable.Icon
 import com.google.firebase.messaging.RemoteMessage
 import com.ubuntuyouiwe.chat.R
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
-import com.ubuntuyouiwe.chat.receiver.NotificationReplyReceiver
 import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.WhereEqualTo
 import com.ubuntuyouiwe.chat.domain.repository.NotificationRepository
 import com.ubuntuyouiwe.chat.presentation.activity.MainActivity
+import com.ubuntuyouiwe.chat.receiver.NotificationReplyReceiver
 import com.ubuntuyouiwe.chat.util.notification_channel.Constants.KEY_TEXT_REPLY
 import com.ubuntuyouiwe.chat.util.notification_channel.NotificationChannelInfo
 import com.ubuntuyouiwe.chat.util.notification_channel.NotificationOnEvent
@@ -31,41 +31,40 @@ class NotificationRepositoryImpl @Inject constructor(
     override var messages: ArrayList<Notification.MessagingStyle.Message> = ArrayList()
 
 
-    init {
-        isNotificationDelegationEnabled(false)
-
-    }
-
     override suspend fun createDeviceToken(): String? {
         return firebaseDataSource.firebaseMessaging().token.await()
     }
 
-    override fun isNotificationDelegationEnabled(boolean: Boolean) {
-        firebaseDataSource.firebaseMessaging().isNotificationDelegationEnabled = boolean
-    }
-
-    override suspend fun sendNotification(message: RemoteMessage) {
-        firebaseDataSource.firebaseMessaging().send(message)
-    }
 
     override suspend fun saveTokenToDatabase(onNewToken: String) {
-        val documentId = firebaseDataSource.whereEqualToDocument(
+        val document = firebaseDataSource.whereEqualToDocument(
             WhereEqualTo(DatabaseFieldNames.EMAIL, firebaseDataSource.user()?.email),
             FirebaseCollection.Users
-        ).documents.firstOrNull()?.id
+        ).documents
+        val documentId = document.firstOrNull()?.id
 
+        val deviceTokensObject =
+            document.firstOrNull()?.get(DatabaseFieldNames.DEVICE_TOKEN.fieldNames)
 
+        val deviceTokens =
+            deviceTokensObject?.let { it as? List<*> }?.map { it.toString() }?.toMutableList()
+
+        val deviceTokensSet = deviceTokens?.toMutableSet()
+
+        if (deviceTokensSet?.contains(onNewToken) == false) {
+            deviceTokensSet.add(onNewToken)
+        }
         documentId?.let { id ->
             firebaseDataSource.update(
                 FirebaseCollection.Users,
                 documentId = id,
-                data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to onNewToken)
+                data = hashMapOf(DatabaseFieldNames.DEVICE_TOKEN.fieldNames to deviceTokensSet?.toList())
             )
         }
 
     }
 
-    private fun intent(baseContext: Context, actionName: String): Intent {
+    private fun intentNotificationReplyReceiver(baseContext: Context, actionName: String): Intent {
         return Intent(baseContext, NotificationReplyReceiver::class.java).apply {
             action = actionName
             putExtra("1", 0)
@@ -75,11 +74,10 @@ class NotificationRepositoryImpl @Inject constructor(
     override fun pendingIntent(baseContext: Context, actionName: String): PendingIntent {
 
 
-
         return PendingIntent.getBroadcast(
             baseContext,
             0,
-            intent(baseContext, actionName),
+            intentNotificationReplyReceiver(baseContext, actionName),
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
@@ -89,7 +87,7 @@ class NotificationRepositoryImpl @Inject constructor(
             val email = it.data["email"].toString()
             email.substringBefore('@')
 
-        }?: run {
+        } ?: run {
             if (error) "Error!!" else "You"
         }
         return Person.Builder()
@@ -105,7 +103,7 @@ class NotificationRepositoryImpl @Inject constructor(
     ): Notification.MessagingStyle.Message {
         val message = remoteMessage?.let {
             it.data["message"].toString()
-        }?: run {
+        } ?: run {
             localMessage
         }
         return Notification.MessagingStyle.Message(
@@ -140,7 +138,8 @@ class NotificationRepositoryImpl @Inject constructor(
         action: Notification.Action,
         contentIntent: PendingIntent,
         deleteIntent: PendingIntent,
-        channel: NotificationChannelInfo
+        channel: NotificationChannelInfo,
+        setOnlyAlertOnce: Boolean
     ) {
         Notification.Builder(baseContext, channel.id).apply {
             setSmallIcon(R.drawable.chat_logo)
@@ -149,16 +148,20 @@ class NotificationRepositoryImpl @Inject constructor(
             setContentIntent(contentIntent)
             setDeleteIntent(deleteIntent)
             setAutoCancel(true)
+            setOnlyAlertOnce(setOnlyAlertOnce)
             setCategory(Notification.CATEGORY_MESSAGE)
             notificationAdmin.notify(1, build())
         }
     }
+
     override fun sendStyledNotification(
         baseContext: Context,
         remoteMessage: RemoteMessage?,
         localMessage: String?,
         error: Boolean,
-        channel: NotificationChannelInfo
+        channel: NotificationChannelInfo,
+        setOnlyAlertOnce: Boolean
+
     ) {
         val actionIntent = pendingIntent(baseContext, NotificationOnEvent.SEND.actionName)
         val deleteIntent = pendingIntent(baseContext, NotificationOnEvent.DELETE.actionName)
@@ -167,9 +170,14 @@ class NotificationRepositoryImpl @Inject constructor(
             putExtra(NotificationOnEvent.OPEN.actionName, NotificationOnEvent.OPEN.actionName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
-        val openNotifyIntent =  PendingIntent.getActivity(baseContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+        val openNotifyIntent = PendingIntent.getActivity(
+            baseContext,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
 
-        val person = notificationPerson(remoteMessage,error)
+        val person = notificationPerson(remoteMessage, error)
 
         val notificationMessage = notificationMessage(remoteMessage, localMessage, person)
 
@@ -186,7 +194,15 @@ class NotificationRepositoryImpl @Inject constructor(
 
         val action = remoteInput(actionIntent, baseContext).build()
 
-        notification(baseContext, style, action, openNotifyIntent, deleteIntent, channel)
+        notification(
+            baseContext,
+            style,
+            action,
+            openNotifyIntent,
+            deleteIntent,
+            channel,
+            setOnlyAlertOnce
+        )
     }
 
 

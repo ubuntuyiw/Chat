@@ -13,7 +13,9 @@ object NotificationChannelCreator {
         val channelPriority = NotificationManager.IMPORTANCE_HIGH
         var channel: NotificationChannel? = notificationAdmin.getNotificationChannel(channelId)
 
-        channel = channel?: NotificationChannel(channelId, channelName, channelPriority)
+        channel = channel?: NotificationChannel(channelId, channelName, channelPriority).apply {
+            description = "Chat Group"
+        }
         notificationAdmin.createNotificationChannel(channel)
 
     }

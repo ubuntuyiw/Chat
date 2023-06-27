@@ -31,3 +31,25 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Node.js
+## Dependency directories
+node_modules/
+
+## Environment variables
+.env
+
+## Logs
+npm-debug.log*
+
+## Package lock files (uncomment if you don't want to use them)
+#package-lock.json
+#yarn.lock
+
+## Compiled JavaScript files
+*.js.map
+*.d.ts
+
+## Firebase cloud functions bundles
+functions/lib/
+functions/node_modules/

@@ -10,9 +10,7 @@ import com.ubuntuyouiwe.chat.util.notification_channel.NotificationChannelInfo
 interface NotificationRepository {
     val messages: ArrayList<Notification.MessagingStyle.Message>
     suspend fun createDeviceToken(): String?
-    fun isNotificationDelegationEnabled(boolean: Boolean)
 
-    suspend fun sendNotification(message: RemoteMessage)
 
     suspend fun saveTokenToDatabase(onNewToken: String)
 
@@ -38,7 +36,8 @@ interface NotificationRepository {
         action: Notification.Action,
         contentIntent: PendingIntent,
         deleteIntent: PendingIntent,
-        channel: NotificationChannelInfo
+        channel: NotificationChannelInfo,
+        setOnlyAlertOnce: Boolean
     )
 
     fun sendStyledNotification(
@@ -46,6 +45,7 @@ interface NotificationRepository {
         remoteMessage: RemoteMessage?,
         localMessage: String?,
         error: Boolean,
-        channel: NotificationChannelInfo
+        channel: NotificationChannelInfo,
+        setOnlyAlertOnce: Boolean
     )
 }

@@ -2,6 +2,7 @@ package com.ubuntuyouiwe.chat.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
+import com.google.firebase.messaging.RemoteMessage
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
@@ -26,7 +27,6 @@ class MessagingRepositoryImpl @Inject constructor(
             data = messageDtoToHashMap,
             collection = FirebaseCollection.Message
         )
-
     }
 
 
