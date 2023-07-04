@@ -3,11 +3,13 @@ package com.ubuntuyouiwe.chat.data.repository
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.messaging.RemoteMessage
+import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
 import com.ubuntuyouiwe.chat.data.source.remote.firebase.FirebaseDataSource
 import com.ubuntuyouiwe.chat.data.util.DatabaseFieldNames
 import com.ubuntuyouiwe.chat.data.util.FirebaseCollection
 import com.ubuntuyouiwe.chat.data.util.OrderBy
 import com.ubuntuyouiwe.chat.data.util.toHashMap
+import com.ubuntuyouiwe.chat.data.util.toMessageResult
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.Messages
 import com.ubuntuyouiwe.chat.domain.repository.MessagingRepository
@@ -39,7 +41,7 @@ class MessagingRepositoryImpl @Inject constructor(
             if (it.isSuccess) {
                 Messages(
                     it.getOrNull()?.documents?.mapNotNull { documentSnapshot ->
-                        var messageResult = documentSnapshot.toObject(MessageResult::class.java)
+                        var messageResult = documentSnapshot.toObject(MessageResultDto::class.java)?.toMessageResult()
                         messageResult = messageResult?.copy(
                             hasPendingWrites = documentSnapshot.metadata.hasPendingWrites(),
                         )

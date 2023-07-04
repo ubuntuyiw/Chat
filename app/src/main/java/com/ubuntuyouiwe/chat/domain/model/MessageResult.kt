@@ -5,6 +5,6 @@ import com.google.firebase.Timestamp
 data class MessageResult(
     val message: String? = null,
     val email: String? = null,
-    val date: Timestamp = Timestamp.now(),
+    val date: String? = null,
     val hasPendingWrites: Boolean = false,
 )

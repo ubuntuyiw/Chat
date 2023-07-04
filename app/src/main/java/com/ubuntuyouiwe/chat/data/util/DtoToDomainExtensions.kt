@@ -1,5 +1,6 @@
 package com.ubuntuyouiwe.chat.data.util
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.ubuntuyouiwe.chat.data.dto.UserDto
 import com.ubuntuyouiwe.chat.data.dto.messages.MessageResultDto
@@ -7,6 +8,8 @@ import com.ubuntuyouiwe.chat.data.dto.messages.MessagesDto
 import com.ubuntuyouiwe.chat.domain.model.MessageResult
 import com.ubuntuyouiwe.chat.domain.model.Messages
 import com.ubuntuyouiwe.chat.domain.model.User
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 fun FirebaseUser.toUserDto(): UserDto =
     UserDto(
@@ -24,12 +27,20 @@ fun UserDto.toUser(): User =
         email = this.email
     )
 
+private fun dateFormat(date: Timestamp?): String? {
+    return date?.let {
+        val milliseconds = it.seconds * 1000 + it.nanoseconds / 1000000
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        sdf.format(milliseconds)
+    }
 
+
+}
 fun MessageResultDto.toMessageResult(): MessageResult =
     MessageResult(
         message = this.message,
         email = this.email,
-        date = this.date,
+        date = dateFormat(this.date),
         hasPendingWrites = this.hasPendingWrites
     )
 

@@ -89,6 +89,7 @@ class AuthRepositoryImpl @Inject constructor(
 
                 val deviceTokensSet = deviceTokens?.toMutableSet()
 
+
                 if (deviceTokensSet?.contains(firebaseDatasource.getDeviceToken()) == false) {
                     deviceTokensSet.add(firebaseDatasource.getDeviceToken() ?: "")
                 }
@@ -106,7 +107,7 @@ class AuthRepositoryImpl @Inject constructor(
                     firebaseDatasource.add(
                         data = hashMapOf(
                             DatabaseFieldNames.EMAIL.fieldNames to user.email,
-                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to deviceTokensSet?.toList(),
+                            DatabaseFieldNames.DEVICE_TOKEN.fieldNames to listOf(firebaseDatasource.getDeviceToken()),
                             DatabaseFieldNames.LAST_ENTRY_DATE.fieldNames to Timestamp.now(),
                         ),
                         collection = FirebaseCollection.Users

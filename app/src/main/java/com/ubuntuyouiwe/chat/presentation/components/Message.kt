@@ -21,10 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Timestamp
 import com.ubuntuyouiwe.chat.R
 
 @Composable
-fun Message(messageOwner: Boolean, email: String, content: String, hasPendingWrites: Boolean) {
+fun Message(messageOwner: Boolean, email: String, content: String, hasPendingWrites: Boolean, date: String?) {
     Box(
         modifier = Modifier
             .padding(16.dp)
@@ -71,7 +72,7 @@ fun Message(messageOwner: Boolean, email: String, content: String, hasPendingWri
                     )
 
                     Text(
-                        text = "21:50",
+                        text = date?: "",
                         fontSize = 12.sp,
                         color = Color.DarkGray,
                         fontWeight = FontWeight.Light,

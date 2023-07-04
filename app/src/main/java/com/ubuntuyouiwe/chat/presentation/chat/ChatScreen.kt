@@ -106,7 +106,8 @@ fun ChatScreen() {
                                 messageOwner = Firebase.auth.currentUser?.email == item.email,
                                 email = item.email.toString(),
                                 content = item.message.toString(),
-                                hasPendingWrites = item.hasPendingWrites
+                                hasPendingWrites = item.hasPendingWrites,
+                                item.date
                             )
                         }
                     }
