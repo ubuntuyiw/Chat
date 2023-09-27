@@ -19,12 +19,11 @@ class MessageWorker @AssistedInject constructor(
     @Assisted val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val messagingRepository: MessagingRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val notificationRepository: NotificationRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
 
-    @Inject
-    lateinit var notificationRepository: NotificationRepository
     override suspend fun doWork(): Result {
 
         val replyText = inputData.getString(KEY_TEXT_REPLY) ?: return Result.failure()
